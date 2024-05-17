@@ -1,9 +1,7 @@
 package gg.xp.xivdata.data.duties;
 
-import gg.xp.xivdata.data.*;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Arrays;
+import java.util.List;
 
 public enum KnownDuty implements Duty {
 	None("General", Expansion.GENERAL, DutyType.OTHER),
@@ -57,25 +55,32 @@ public enum KnownDuty implements Duty {
 	private final String name;
 	private final Expansion expac;
 	private final DutyType type;
-	private final @Nullable Long zoneId;
+	private final List<Long> zoneIds;
 
 	KnownDuty(String name, long zoneId, Expansion expac, DutyType type) {
 		this.name = name;
 		this.expac = expac;
 		this.type = type;
-		this.zoneId = zoneId;
+		this.zoneIds = List.of(zoneId);
+	}
+
+	KnownDuty(String name, List<Long> zoneIds, Expansion expac, DutyType type) {
+		this.name = name;
+		this.expac = expac;
+		this.type = type;
+		this.zoneIds = zoneIds;
 	}
 
 	KnownDuty(String name, Expansion expac, DutyType type) {
 		this.name = name;
 		this.expac = expac;
 		this.type = type;
-		this.zoneId = null;
+		this.zoneIds = List.of();
 	}
 
 	public static KnownDuty forZone(long zone) {
 		return Arrays.stream(values())
-				.filter(kd -> kd.zoneId != null && kd.zoneId == zone)
+				.filter(kd -> kd.zoneIds.contains(zone))
 				.findFirst()
 				.orElse(null);
 	}
@@ -96,7 +101,7 @@ public enum KnownDuty implements Duty {
 	}
 
 	@Override
-	public @Nullable Long getZoneId() {
-		return zoneId;
+	public List<Long> getZoneIds() {
+		return zoneIds;
 	}
 }

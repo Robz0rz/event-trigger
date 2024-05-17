@@ -1,6 +1,6 @@
 package gg.xp.xivdata.data.duties;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.List;
 
 public interface Duty {
 	String getName();
@@ -9,5 +9,5 @@ public interface Duty {
 
 	DutyType getType();
 
-	@Nullable Long getZoneId();
+	List<Long> getZoneIds();
 }

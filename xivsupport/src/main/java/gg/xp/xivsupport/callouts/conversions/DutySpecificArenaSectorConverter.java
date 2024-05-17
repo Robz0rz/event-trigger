@@ -12,10 +12,10 @@ import java.util.Map;
 public class DutySpecificArenaSectorConverter {
 	private final Map<ArenaSector, StringSetting> perSectorSettings;
 
-	public DutySpecificArenaSectorConverter(PersistenceProvider pers, long zone) {
+	public DutySpecificArenaSectorConverter(PersistenceProvider pers, String key) {
 		perSectorSettings = new EnumMap<>(ArenaSector.class);
 		for (ArenaSector value : ArenaSector.values()) {
-			perSectorSettings.put(value, new StringSetting(pers, "callout-processor.arena-sector.zone-specific.%s.%s".formatted(zone, value.name()), null));
+			perSectorSettings.put(value, new StringSetting(pers, "callout-processor.arena-sector.zone-specific.%s.%s".formatted(key, value.name()), null));
 		}
 	}
 

@@ -36,8 +36,7 @@ public interface XivState extends SubState {
 	boolean zoneIs(long zoneId);
 
 	default boolean dutyIs(Duty duty) {
-		Long expected = duty.getZoneId();
-		return expected != null && zoneIs(expected);
+		return duty.getZoneIds().stream().anyMatch(this::zoneIs);
 	}
 
 	void removeSpecificCombatant(long idToRemove);

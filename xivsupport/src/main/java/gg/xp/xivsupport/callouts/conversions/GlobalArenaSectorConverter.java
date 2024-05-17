@@ -17,7 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ScanMe
 public class GlobalArenaSectorConverter {
@@ -28,7 +31,7 @@ public class GlobalArenaSectorConverter {
 	private final PersistenceProvider pers;
 	private boolean suppressWarning;
 	private @Nullable KnownDuty currentDuty;
-	private final Map<KnownDuty, DutySpecificArenaSectorConverter> dutySpecific = new EnumMap<>(KnownDuty.class);
+	private final Map<String, DutySpecificArenaSectorConverter> dutySpecific = new HashMap<>();
 	private final Object lock = new Object();
 
 	// TODO: per-zone stuff
@@ -46,17 +49,23 @@ public class GlobalArenaSectorConverter {
 		if (duty == null) {
 			return null;
 		}
-		Long zoneId = duty.getZoneId();
-		if (zoneId == null) {
+
+		List<Long> zoneIds = duty.getZoneIds();
+		if (zoneIds.isEmpty()) {
 			return null;
 		}
+
 		synchronized (lock) {
-			return dutySpecific.computeIfAbsent(duty, unused -> makeDutySpecificConverter(zoneId));
+			String key = zoneIds.stream().sorted().map(String::valueOf).collect(Collectors.joining(","));
+			return dutySpecific.computeIfAbsent(
+					key,
+					unused -> makeDutySpecificConverter(key)
+			);
 		}
 	}
 
-	private @NotNull DutySpecificArenaSectorConverter makeDutySpecificConverter(long zoneId) {
-		return new DutySpecificArenaSectorConverter(pers, zoneId);
+	private @NotNull DutySpecificArenaSectorConverter makeDutySpecificConverter(String key) {
+		return new DutySpecificArenaSectorConverter(pers, key);
 	}
 
 	private @Nullable DutySpecificArenaSectorConverter getConverterForCurrentZone() {
